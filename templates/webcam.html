@@ -1,0 +1,89 @@
+<html>
+<head></head>
+<body>
+<div class="col-md-4" >
+						 
+	<div>
+	<video id="myVideo" autoplay></video> 
+	</div>
+
+	<div>
+	<input type=button value="Take Snapshot" id="buttonId">
+	</div>
+
+	<div>
+	<canvas id="myCanvas" name="userImage">
+	</canvas>
+	</div>
+
+	<div>
+	<input type="button" id="submitbutton" value="Save Image">
+	</div>
+
+	<div>
+ 	<form action="/userImage" method="post" enctype="multipart/form-data"> 
+	<input type="submit" value="submit">
+        </form>  
+	</div>
+
+</div>  
+<script>
+    let v = document.getElementById("myVideo");
+    let w = document.getElementById("buttonId");
+    let x = document.getElementById("submitbutton");
+    let imageCanvas = document.createElement('canvas');
+    let imageCtx = imageCanvas.getContext("2d");
+    let c = document.getElementById("myCanvas");
+
+function postFile(file) {
+        let formdata = new FormData();
+        formdata.append("image", file);
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', 'http://localhost:5000/image', true);
+        xhr.onload = function () {
+            if (this.status === 200)
+                console.log(this.response);
+            else
+                console.error(xhr);
+        };
+        xhr.send(formdata);
+    }
+function sendImagefromCanvas() {
+        imageCanvas.width = c.width;
+        imageCanvas.height = c.height;
+        imageCtx.drawImage(c, 0, 0, c.width, c.height);
+        imageCanvas.toBlob(postFile, 'image/jpeg');
+    }
+
+function displayImage() {
+        c.width = v.videoWidth;
+        c.height = v.videoHeight;
+	var ctx = c.getContext("2d");
+	ctx.drawImage(v, 0, 0, v.videoWidth, v.videoHeight);
+};
+ 
+w.onclick = function() {
+        console.log('click');
+        //sendImagefromCanvas();
+	displayImage();
+};
+
+x.onclick = function() {
+	console.log('click');
+	sendImagefromCanvas();
+	alert("Image saved successfully!"); 
+};
+
+
+
+window.onload = function () {
+    navigator.mediaDevices.getUserMedia({video: {width: 1300, height: 700}, audio: false}).then(stream => {
+                v.srcObject = stream;
+            }).catch(err => {
+                console.log('navigator.getUserMedia error: ', err)
+            });
+    };
+
+</script>
+</body>
+</html>
