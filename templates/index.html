@@ -1,0 +1,46 @@
+<html>
+  <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Attendance System</title>
+        <link rel="stylesheet" href="css/normalize.css">
+        <link href='https://fonts.googleapis.com/css?family=Nunito:400,300' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="static/css/main.css">
+
+    </head>
+    <body>
+
+      <form action="/Class_selection" method="POST" enctype="multipart/form-data">
+		
+        <h1>Attendance System</h1>
+<p>
+</p> 
+	<label> Select Class </label>
+        <select name="class_name" class="selectpicker form-control">
+	 <option value="-- select --"></option>
+  	 <option value="BSc_Electronics">BSc Electronics</option>
+  	 <option value="BSc_Computer">BSc Computer Science</option>
+
+        </select>     
+<p>
+</p>   
+	<label> batch </label>
+        <select name="batch_name" class="selectpicker form-control">
+	 <option value="-- select --"></option>
+  	 <option value="2016-19">2016-2019</option>
+  	 <option value="2017-20">2017-2020</option>
+  	 <option value="2018-21">2018-2021</option>
+  	 <option value="2019-22">2019-2022</option>
+
+        </select>     
+<p>
+</p>
+        <button type="submit">Submit</button>
+		
+	  </form>
+
+      
+    </body>
+	
+
+</html>
