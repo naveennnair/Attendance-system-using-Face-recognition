@@ -79,6 +79,40 @@ def webcam_imgcapture():
         df[str(date.today())] = 'Absent'
         df[str(date.today())].loc[df['Name'].isin(names),] = 'Present'
         df.to_csv(os.path.join('Attendance_sheet', class_name, (batch+'.csv')), index = False)
+
+        # Leave count
+        # Today absenties
+        today_abs = list(df.loc[df[df.columns[-1]] == 'Absent','Name'])
+        leave_numbers = []
+        for name in today_abs:
+            i = -1
+            cnt = 0
+            while(i > -9):
+                if(list(df.loc[df['Name'] == name, df.columns[i]])[0] == 'Absent'):
+                    cnt = cnt+1
+                    i = i-1
+                else:
+                    break
+            leave_numbers.append(cnt)    
+        leave_numbers = [str(7)+'+ Days' if leave_num >= 8 else leave_num for leave_num in leave_numbers]
+        abs_cnt_df = pd.DataFrame(list(zip(today_abs,leave_numbers)), columns = ['Name', 'Number of Days'], index = range(1, len(leave_numbers)+1))
+        
+        # Last day absenties
+        lst_day_abs = list(df.loc[df[df.columns[-2]] == 'Absent','Name'])
+        leave_numbers = []
+        for name in lst_day_abs:
+            i = -2
+            cnt = 0
+            while(i > -9):
+                if(list(df.loc[df['Name'] == name, df.columns[i]])[0] == 'Absent'):
+                    cnt = cnt+1
+                    i = i-1
+                else:
+                    break
+            leave_numbers.append(cnt)    
+        leave_numbers = [str(7)+'+ Days' if leave_num >= 8 else leave_num for leave_num in leave_numbers]
+        lstday_abs = pd.DataFrame(list(zip(lst_day_abs,leave_numbers)), columns = ['Name', 'Number of Days'], index = range(1, len(leave_numbers)+1))
+          
         df = df.set_index('Name')
         del df.index.name
         
@@ -114,10 +148,10 @@ def webcam_imgcapture():
         for col in df.iloc[:,1:]:
             cnt.append(df[col].value_counts()['Absent'])
         
-        width = 0.8
+        width = 0.7
         fig, ax = plt.subplots()
                                 
-        ax.bar(df.columns[1:][-5:], cnt[-5:], width, color = 'b')
+        ax.bar(df.columns[1:][-7:], cnt[-7:], width, color = 'b')
         ax.set_ylabel('Absenties Count')
         ax.set_title('Past 5 days data', bbox={'facecolor':'0.8', 'pad':5})
         
@@ -128,9 +162,14 @@ def webcam_imgcapture():
         
         print("Image saved")
         return render_template('preview.html',  tables=[df.iloc[:,-7:].to_html(columns = df.iloc[:,-7:].columns,
-                                                        classes ='df', header = "true", border = 10, index_names = False)], 
-                                                        img_pie = graph_path+'pie_chart'+d,
-                                                        img_bar = graph_path+'bar_chart'+d)
+                                                            header = "true", border = 10), 
+                                                        abs_cnt_df.to_html(columns = abs_cnt_df.columns,
+                                                            header = "true", border = 10),
+                                                        lstday_abs.to_html(columns = lstday_abs.columns,
+                                                            header = "true", border = 10)],
+                                                titles = ['na', 'Attendance Sheet', 'Absenties Today', 'Absenties Last_day'],                       
+                                                img_pie = graph_path+'pie_chart'+d,
+                                                img_bar = graph_path+'bar_chart'+d)
 
 
 @app.route('/upload', methods=['GET', 'POST'])
@@ -151,6 +190,40 @@ def img_upload():
         df[str(date.today())] = 'Absent'
         df[str(date.today())].loc[df['Name'].isin(names),] = 'Present'
         df.to_csv(os.path.join('Attendance_sheet', class_name, (batch+'.csv')), index = False)
+        
+        # Leave count
+        # Today absenties
+        today_abs = list(df.loc[df[df.columns[-1]] == 'Absent','Name'])
+        leave_numbers = []
+        for name in today_abs:
+            i = -1
+            cnt = 0
+            while(i > -9):
+                if(list(df.loc[df['Name'] == name, df.columns[i]])[0] == 'Absent'):
+                    cnt = cnt+1
+                    i = i-1
+                else:
+                    break
+            leave_numbers.append(cnt)    
+        leave_numbers = [str(7)+'+ Days' if leave_num >= 8 else leave_num for leave_num in leave_numbers]
+        abs_cnt_df = pd.DataFrame(list(zip(today_abs,leave_numbers)), columns = ['Name', 'Number of Days'], index = range(1, len(leave_numbers)+1))
+        
+        # Last day absenties
+        lst_day_abs = list(df.loc[df[df.columns[-2]] == 'Absent','Name'])
+        leave_numbers = []
+        for name in lst_day_abs:
+            i = -2
+            cnt = 0
+            while(i > -9):
+                if(list(df.loc[df['Name'] == name, df.columns[i]])[0] == 'Absent'):
+                    cnt = cnt+1
+                    i = i-1
+                else:
+                    break
+            leave_numbers.append(cnt)    
+        leave_numbers = [str(7)+'+ Days' if leave_num >= 8 else leave_num for leave_num in leave_numbers]
+        lstday_abs = pd.DataFrame(list(zip(lst_day_abs,leave_numbers)), columns = ['Name', 'Number of Days'], index = range(1, len(leave_numbers)+1))
+        
         df = df.set_index('Name')
         del df.index.name
         
@@ -171,12 +244,12 @@ def img_upload():
         colors = ['red', 'yellowgreen']
         explode = (0.1, 0)  # explode 1st slice
         
-        fig = plt.figure(figsize=(8,8))
+        fig = plt.figure(figsize=(6,6))
         ax = fig.subplots(1,1)
         # Pie chart
         ax.pie(sizes, explode=explode, labels=labels, colors=colors,
                 autopct='%1.1f%%', shadow=True, startangle=140)
-        ax.set_title("Present Vs Abscenties count\n" + str(date.today()), bbox={'facecolor':'0.8', 'pad':9})
+        ax.set_title("Present Vs Abscenties count\n" + str(date.today()), bbox={'facecolor':'0.8', 'pad':5})
         fg = ax.get_figure()
         plt.savefig(graph_path+'pie_chart'+d)
         plt.close(fg)
@@ -187,10 +260,11 @@ def img_upload():
         for col in df.iloc[:,1:]:
             cnt.append(df[col].value_counts()['Absent'])
         
-        width = 0.8
-        fig, ax = plt.subplots()
+        width = 0.7
+        fig = plt.figure(figsize=(10,7))
+        ax = fig.subplots(1,1)
                                 
-        ax.bar(df.columns[1:][-5:], cnt[-5:], width, color = 'b')
+        ax.bar(df.columns[1:][-7:], cnt[-7:], width, color = 'b')
         ax.set_ylabel('Absenties Count')
         ax.set_title('Past 5 days data', bbox={'facecolor':'0.8', 'pad':5})
         
@@ -200,9 +274,14 @@ def img_upload():
         plt.close(fig)
         
         return render_template('preview.html',  tables=[df.iloc[:,-7:].to_html(columns = df.iloc[:,-7:].columns,
-                                                        classes ='df', header = "true", border = 10, index_names = False)], 
-                                                        img_pie = graph_path+'pie_chart'+d,
-                                                        img_bar = graph_path+'bar_chart'+d)
+                                                            header = "true", border = 10), 
+                                                        abs_cnt_df.to_html(columns = abs_cnt_df.columns,
+                                                            header = "true", border = 10),
+                                                        lstday_abs.to_html(columns = lstday_abs.columns,
+                                                            header = "true", border = 10)],
+                                                titles = ['na', 'Attendance Sheet', 'Absenties Today', 'Absenties Last_day'],                       
+                                                img_pie = graph_path+'pie_chart'+d,
+                                                img_bar = graph_path+'bar_chart'+d)
 
 
 if __name__ == '__main__':
@@ -210,8 +289,27 @@ if __name__ == '__main__':
 
 
 #df = pd.read_csv(r'C:\Users\Public\Documents\Python Scripts\Attendence_system\Attendance_sheet\BSc_Computer\2017-20.csv')
-###df.iloc[:,-4:]
-##df = df.set_index('Name', drop = False)
-##del df.index.name
+####df.iloc[:,-4:]
+#df = df.set_index('Name', drop = True)
+###del df.index.name
+##
+##df[df.columns[-1]].value_counts()
+#lastday_abs = list(df.loc[df[df.columns[-2]] == 'Absent','Name'])
 #
-#df[df.columns[-1]].value_counts()
+#
+#leave_numbers = []
+#for name in lastday_abs:
+#    i = -1
+#    cnt = 0
+#    while(i > -9):
+#        if(list(df.loc[df['Name'] == name, df.columns[i]])[0] == 'Absent'):
+#            cnt = cnt+1
+#            i = i-1
+#        else:
+#            break
+#
+#    leave_numbers.append(cnt)    
+#    
+#leave_numbers = [str(leave_num-1)+'+ Days' if leave_num== 8 else leave_num for leave_num in leave_numbers]
+#pd.DataFrame(list(zip(lastday_abs,leave_numbers)), columns = ['Name', 'Number of Days'])
+
