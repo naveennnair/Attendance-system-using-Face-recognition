@@ -9,7 +9,7 @@ from flask import Flask, render_template, request, redirect, url_for
 import os
 import glob
 import pandas as pd
-#import numpy as np
+import numpy as np
 import time
 from datetime import date
 from face_detection import student_face_identifier as sfi
@@ -144,16 +144,41 @@ def webcam_imgcapture():
         plt.close(fig)        
         
         # Bar chart
-        cnt = []
+        cnt_abs = []
+        cnt_pre = []
         for col in df.iloc[:,1:]:
-            cnt.append(df[col].value_counts()['Absent'])
+            if(df[col].value_counts()[0] != len(df)):
+                cnt_abs.append(df[col].value_counts()['Absent'])
+                cnt_pre.append(df[col].value_counts()['Present'])
+            else:
+                if(df[col].value_counts().index[0] == 'Absent'):
+                    cnt_abs.append(df[col].value_counts()[0])
+                    cnt_pre.append(0)
+                else:
+                    cnt_pre.append(df[col].value_counts()[0])
+                    cnt_abs.append(0)    
         
-        width = 0.7
-        fig, ax = plt.subplots()
-                                
-        ax.bar(df.columns[1:][-7:], cnt[-7:], width, color = 'b')
-        ax.set_ylabel('Absenties Count')
-        ax.set_title('Past 5 days data', bbox={'facecolor':'0.8', 'pad':5})
+        width = 0.25
+        fig = plt.figure(figsize=(10,7))
+        ax = fig.subplots(1,1)
+        
+        # Set position of bar on X axis
+        r1 = np.arange(len(cnt_abs[-7:]))
+        r2 = [x + width for x in r1]
+        #        r3 = [x + barWidth for x in r2]
+
+        ax.bar(r1, cnt_pre[-7:], color='#557f2d', width=width, edgecolor='white', label='Present')
+        ax.bar(r2, cnt_abs[-7:], color='#F94242', width=width, edgecolor='white', label='Absent')
+        ax.set_xlabel('Date', fontweight='bold')
+        ax.set_ylabel('Count', fontweight='bold')
+        plt.xticks([r + width for r in range(len(cnt_abs))], list(df.columns[1:])[-7:])
+        ax.tick_params(axis ='x', rotation = 45)
+ 
+        # Create legend & Show graphic
+        ax.legend()
+#        ax.bar(df.columns[1:][-7:], cnt[-7:], width, color = 'b')
+
+        ax.set_title('Past 7 days data', bbox={'facecolor':'0.8', 'pad':5})
         
         fg = ax.get_figure()
         plt.savefig(graph_path+'bar_chart'+d)
@@ -256,17 +281,41 @@ def img_upload():
         plt.close(fig)        
         
         # Bar chart
-        cnt = []
+        cnt_abs = []
+        cnt_pre = []
         for col in df.iloc[:,1:]:
-            cnt.append(df[col].value_counts()['Absent'])
+            if(df[col].value_counts()[0] != len(df)):
+                cnt_abs.append(df[col].value_counts()['Absent'])
+                cnt_pre.append(df[col].value_counts()['Present'])
+            else:
+                if(df[col].value_counts().index[0] == 'Absent'):
+                    cnt_abs.append(df[col].value_counts()[0])
+                    cnt_pre.append(0)
+                else:
+                    cnt_pre.append(df[col].value_counts()[0])
+                    cnt_abs.append(0)    
         
-        width = 0.7
+        width = 0.25
         fig = plt.figure(figsize=(10,7))
         ax = fig.subplots(1,1)
-                                
-        ax.bar(df.columns[1:][-7:], cnt[-7:], width, color = 'b')
-        ax.set_ylabel('Absenties Count')
-        ax.set_title('Past 5 days data', bbox={'facecolor':'0.8', 'pad':5})
+        
+        # Set position of bar on X axis
+        r1 = np.arange(len(cnt_abs[-7:]))
+        r2 = [x + width for x in r1]
+        #        r3 = [x + barWidth for x in r2]
+
+        ax.bar(r1, cnt_pre[-7:], color='#557f2d', width=width, edgecolor='white', label='Present')
+        ax.bar(r2, cnt_abs[-7:], color='#F94242', width=width, edgecolor='white', label='Absent')
+        ax.set_xlabel('Date', fontweight='bold')
+        ax.set_ylabel('Count', fontweight='bold')
+        plt.xticks([r + width for r in range(len(cnt_abs))], list(df.columns[1:])[-7:])
+        ax.tick_params(axis ='x', rotation = 45)
+ 
+        # Create legend & Show graphic
+        ax.legend()
+#        ax.bar(df.columns[1:][-7:], cnt[-7:], width, color = 'b')
+
+        ax.set_title('Past 7 days data', bbox={'facecolor':'0.8', 'pad':5})
         
         fg = ax.get_figure()
         plt.savefig(graph_path+'bar_chart'+d)
@@ -312,4 +361,29 @@ if __name__ == '__main__':
 #    
 #leave_numbers = [str(leave_num-1)+'+ Days' if leave_num== 8 else leave_num for leave_num in leave_numbers]
 #pd.DataFrame(list(zip(lastday_abs,leave_numbers)), columns = ['Name', 'Number of Days'])
-
+#
+#import numpy as np
+# 
+## set width of bar
+#barWidth = 0.25
+# 
+## set height of bar
+#bars1 = [12, 30, 1, 8, 22]
+#bars2 = [28, 6, 16, 5, 10]
+# 
+## Set position of bar on X axis
+#r1 = np.arange(len(bars1))
+#r2 = [x + barWidth for x in r1]
+#r3 = [x + barWidth for x in r2]
+# 
+## Make the plot
+#plt.bar(r1, cnt_abs, color='#7f6d5f', width=barWidth, edgecolor='white', label='var1')
+#plt.bar(r2, cnt_pre, color='#557f2d', width=barWidth, edgecolor='white', label='var2')
+# 
+## Add xticks on the middle of the group bars
+#plt.xlabel('group', fontweight='bold')
+#plt.xticks([r + barWidth for r in range(len(bars1))], ['A', 'B', 'C', 'D', 'E'])
+# 
+## Create legend & Show graphic
+#plt.legend()
+#plt.show()
