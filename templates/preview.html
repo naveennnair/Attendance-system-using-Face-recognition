@@ -10,12 +10,21 @@
 
     </head>
     <body>
-
+    	
        {% for table in tables %}
+	   <h2>{{titles[loop.index]}}</h2>
             {{ table|safe }}
 		{% endfor %}
-      
+    
+    <img src = "{{img_pie}}" alt="Absenties count" width="500" height="500">
+</img>  
+&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
+&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
+
+    <img src = "{{img_bar}}" alt="bar chart" width="650" height="500">
+</img> 
+	
     </body>
 	
-	<script> 
+	
 </html>
