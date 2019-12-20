@@ -78,6 +78,14 @@ def webcam_imgcapture():
         df = pd.read_csv(os.path.join('Attendance_sheet', class_name, (batch+'.csv')))
         df[str(date.today())] = 'Absent'
         df[str(date.today())].loc[df['Name'].isin(names),] = 'Present'
+        # Storing as an excel file
+        df_excel = df.copy()
+        def color_negative_red(val):
+            color = 'red' if val == 'Absent' else 'black'
+            return 'color: %s' % color
+         
+        df_excel.style.applymap(color_negative_red).to_excel(os.path.join('Attendance_sheet', class_name, (batch+'.xlsx')), index = False, engine = 'openpyxl', header = True)
+        # Storing as CSV file
         df.to_csv(os.path.join('Attendance_sheet', class_name, (batch+'.csv')), index = False)
 
         # Leave count
@@ -214,6 +222,14 @@ def img_upload():
         df = pd.read_csv(os.path.join('Attendance_sheet', class_name, (batch+'.csv')))
         df[str(date.today())] = 'Absent'
         df[str(date.today())].loc[df['Name'].isin(names),] = 'Present'
+        df_excel = df.copy()
+
+        def color_negative_red(val):
+            color = 'red' if val == 'Absent' else 'black'
+            return 'color: %s' % color
+         
+        df_excel.style.applymap(color_negative_red).to_excel(os.path.join('Attendance_sheet', class_name, (batch+'.xlsx')), index = False, engine = 'openpyxl', header = True)
+
         df.to_csv(os.path.join('Attendance_sheet', class_name, (batch+'.csv')), index = False)
         
         # Leave count
@@ -342,48 +358,3 @@ if __name__ == '__main__':
 #df = df.set_index('Name', drop = True)
 ###del df.index.name
 ##
-##df[df.columns[-1]].value_counts()
-#lastday_abs = list(df.loc[df[df.columns[-2]] == 'Absent','Name'])
-#
-#
-#leave_numbers = []
-#for name in lastday_abs:
-#    i = -1
-#    cnt = 0
-#    while(i > -9):
-#        if(list(df.loc[df['Name'] == name, df.columns[i]])[0] == 'Absent'):
-#            cnt = cnt+1
-#            i = i-1
-#        else:
-#            break
-#
-#    leave_numbers.append(cnt)    
-#    
-#leave_numbers = [str(leave_num-1)+'+ Days' if leave_num== 8 else leave_num for leave_num in leave_numbers]
-#pd.DataFrame(list(zip(lastday_abs,leave_numbers)), columns = ['Name', 'Number of Days'])
-#
-#import numpy as np
-# 
-## set width of bar
-#barWidth = 0.25
-# 
-## set height of bar
-#bars1 = [12, 30, 1, 8, 22]
-#bars2 = [28, 6, 16, 5, 10]
-# 
-## Set position of bar on X axis
-#r1 = np.arange(len(bars1))
-#r2 = [x + barWidth for x in r1]
-#r3 = [x + barWidth for x in r2]
-# 
-## Make the plot
-#plt.bar(r1, cnt_abs, color='#7f6d5f', width=barWidth, edgecolor='white', label='var1')
-#plt.bar(r2, cnt_pre, color='#557f2d', width=barWidth, edgecolor='white', label='var2')
-# 
-## Add xticks on the middle of the group bars
-#plt.xlabel('group', fontweight='bold')
-#plt.xticks([r + barWidth for r in range(len(bars1))], ['A', 'B', 'C', 'D', 'E'])
-# 
-## Create legend & Show graphic
-#plt.legend()
-#plt.show()
